@@ -1,34 +1,28 @@
-const http = require("http");
-const fs = require("fs");
+//* REFACTOR IN EXPRESS *//
+
+const express = require("express");
 const path = require("path");
 
-const server = http.createServer((req, res) => {
-  console.log(`Request received: ${req.url}`);  // DEBUG: vezi exact ce URL primești
-  let filepath;
-
-  if (req.url === "/") {
-    filepath = "./routes/index.html";
-  } else if (req.url === "/about") {
-    filepath = "./routes/about.html";
-  } else if (req.url === "/contact-me") {
-    filepath = "./routes/contact-me.html";
-  } else {
-    filepath = "./routes/404.html";
-  }
-
-  fs.readFile(filepath, (err, data) => {
-    if (err) {
-      res.writeHead(500);
-      res.end("Server error");
-      return;
-    }
-    res.writeHead(200, { "Content-Type": "text/html" });
-    res.end(data);
-  });
-});
-
+const app = express();
 const PORT = 8080;
 
-server.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT}/`);
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "routes/index.html"));
 });
+
+app.get("/about", (req, res) => {
+  res.sendFile(path.join(__dirname, "routes/about.html"));
+});
+app.get("/contact-me", (req, res) => {
+  res.sendFile(path.join(__dirname, "routes/contact-me.html"));
+});
+
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "routes/404.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(` Express server started on http://localhost:${PORT}/`);
+});
+
+//express
